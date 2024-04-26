@@ -3,24 +3,42 @@ const foodCount = 50;
 const poisonCount = 50;
 const playerRadius = 25;
 const foodPoisonRadius = 3;
+let points = 0;
 let foodArray = [];
 let poisonArray = [];
+
+function calculateDistance(x1, y1, x2, y2) {    
+    return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+}
 
 function createFoodPoison() {
   for (let i = 0; i < foodCount; i++) {
     let x = Math.random() * worldSize;
     let y = Math.random() * worldSize;
+    if (calculateDistance(worldSize/2, worldSize/2, x, y) < playerRadius*2) {
+      i--;
+      continue;
+    }
     foodArray.push({ x, y });
   }
 
   for (let i = 0; i < poisonCount; i++) {
     let x = Math.random() * worldSize;
     let y = Math.random() * worldSize;
+    if (calculateDistance(worldSize/2, worldSize/2, x, y) < playerRadius*2) {
+        i--;
+        continue;
+      }
     poisonArray.push({ x, y });
   }
 }
 
 createFoodPoison();
+
+//create a div element that displays the points
+var pointsDiv = document.createElement("div");
+document.body.appendChild(pointsDiv);
+pointsDiv.innerHTML = "Points: " + points;
 
 
 //create a canvas element and add it to the body
