@@ -7,17 +7,22 @@ const sensors = 8;
 let points = 0;
 let foodArray = [];
 let poisonArray = [];
-let player = {  x: worldSize/2, y: worldSize/2, radius: playerRadius };
+let player = { x: worldSize / 2, y: worldSize / 2, radius: playerRadius };
 
-function calculateDistance(x1, y1, x2, y2) {    
-    return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+let controls = new Controls();
+
+function calculateDistance(x1, y1, x2, y2) {
+  return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 }
 
 function createFoodPoison() {
   for (let i = 0; i < foodCount; i++) {
     let x = Math.random() * worldSize;
     let y = Math.random() * worldSize;
-    if (calculateDistance(worldSize/2, worldSize/2, x, y) < playerRadius*4) {
+    if (
+      calculateDistance(worldSize / 2, worldSize / 2, x, y) <
+      playerRadius * 4
+    ) {
       i--;
       continue;
     }
@@ -27,10 +32,13 @@ function createFoodPoison() {
   for (let i = 0; i < poisonCount; i++) {
     let x = Math.random() * worldSize;
     let y = Math.random() * worldSize;
-    if (calculateDistance(worldSize/2, worldSize/2, x, y) < playerRadius*4) {
-        i--;
-        continue;
-      }
+    if (
+      calculateDistance(worldSize / 2, worldSize / 2, x, y) <
+      playerRadius * 4
+    ) {
+      i--;
+      continue;
+    }
     poisonArray.push({ x, y });
   }
 }
@@ -41,7 +49,6 @@ createFoodPoison();
 var pointsDiv = document.createElement("div");
 document.body.appendChild(pointsDiv);
 pointsDiv.innerHTML = "Points: " + points;
-
 
 //create a canvas element and add it to the body
 var canvas = document.createElement("canvas");
@@ -55,28 +62,57 @@ canvas.height = worldSize;
 ctx.fillStyle = "black";
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-ctx.fillStyle = "blue";
+function drawPlayer() {
+  ctx.fillStyle = "blue";
   ctx.beginPath();
   ctx.arc(player.x, player.y, playerRadius, 0, 2 * Math.PI);
   ctx.stroke();
   ctx.fill();
-
-
-for (let i = 0; i < foodArray.length; i++) {
-  let x = Math.random() * worldSize;
-  ctx.fillStyle = "green";
-  ctx.beginPath();
-  ctx.arc(foodArray[i].x, foodArray[i].y, foodPoisonRadius, 0, 2 * Math.PI);
-  ctx.stroke();
-  ctx.fill();
 }
 
-for (let i = 0; i < poisonArray.length; i++) {
-  let x = Math.random() * worldSize;
-  ctx.fillStyle = "red";
-  ctx.beginPath();
-  ctx.arc(poisonArray[i].x, poisonArray[i].y, foodPoisonRadius, 0, 2 * Math.PI);
-  ctx.stroke();
-  ctx.fill();
+function drawFoodPoison() {
+  for (let i = 0; i < foodArray.length; i++) {
+    let x = Math.random() * worldSize;
+    ctx.fillStyle = "green";
+    ctx.beginPath();
+    ctx.arc(foodArray[i].x, foodArray[i].y, foodPoisonRadius, 0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.fill();
+  }
+
+  for (let i = 0; i < poisonArray.length; i++) {
+    let x = Math.random() * worldSize;
+    ctx.fillStyle = "red";
+    ctx.beginPath();
+    ctx.arc(
+      poisonArray[i].x,
+      poisonArray[i].y,
+      foodPoisonRadius,
+      0,
+      2 * Math.PI
+    );
+    ctx.stroke();
+    ctx.fill();
+  }
 }
 
+function animate() {
+  drawFoodPoison();
+  drawPlayer();
+  console.log(controls);
+  if (controls.up) {
+    player.y -= 1;
+  }
+  if (controls.down) {
+    player.y += 1;
+  }
+  if (controls.left) {
+    player.x -= 1;
+  }
+  if (controls.right) {
+    player.x += 1;
+  }
+  requestAnimationFrame(animate);
+}
+
+animate();
