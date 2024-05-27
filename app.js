@@ -1,13 +1,17 @@
+
 const worldSize = 800;
 const foodCount = 50;
 const poisonCount = 50;
 const playerRadius = 25;
 const foodPoisonRadius = 3;
-const sensors = 8;
+const sensors = 5;
+const sensorsLenght = 50;
+
 let points = 0;
 let foodArray = [];
 let poisonArray = [];
-let player = { x: worldSize / 2, y: worldSize / 2, radius: playerRadius };
+
+let player = new Player(worldSize / 2, worldSize / 2, playerRadius, sensors);
 
 let controls = new Controls();
 
@@ -16,12 +20,14 @@ function calculateDistance(x1, y1, x2, y2) {
 }
 
 function createFoodPoison() {
+
   for (let i = 0; i < foodCount; i++) {
     let x = Math.random() * worldSize;
     let y = Math.random() * worldSize;
+   //not create food or poison inside Player
     if (
       calculateDistance(worldSize / 2, worldSize / 2, x, y) <
-      playerRadius * 4
+      playerRadius * 2
     ) {
       i--;
       continue;
@@ -63,11 +69,7 @@ ctx.fillStyle = "black";
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 function drawPlayer() {
-  ctx.fillStyle = "blue";
-  ctx.beginPath();
-  ctx.arc(player.x, player.y, playerRadius, 0, 2 * Math.PI);
-  ctx.stroke();
-  ctx.fill();
+  player.draw();
 }
 
 function drawFoodPoison() {
@@ -97,9 +99,10 @@ function drawFoodPoison() {
 }
 
 function animate() {
-  drawFoodPoison();
+  ctx.clearRect(0, 0, worldSize, worldSize);
   drawPlayer();
-  console.log(controls);
+  drawFoodPoison();
+  //console.log(controls);
   if (controls.up) {
     player.y -= 1;
   }
