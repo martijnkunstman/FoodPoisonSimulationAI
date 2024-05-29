@@ -62,7 +62,7 @@ class Player {
       startAngle + Math.PI / this.sensors,
       this.sensorsLenght / 2
     );
-    ctx.fillText(food.length+"-"+poison.length, point.x, point.y);
+    ctx.fillText(food.length + "-" + poison.length, point.x, point.y);
   }
 
   calculateWedgeValues() {
@@ -157,13 +157,53 @@ class Player {
         );
       }
       for (let ii = 0; ii < this.wedges[i].poison.length; ii++) {
-        this.wedges[i].value -= this.normalizePosition(
-          this.sensorsLenght,
-          this.radius,
-          this.wedges[i].poison[ii]
-        )*2;
+        this.wedges[i].value -=
+          this.normalizePosition(
+            this.sensorsLenght,
+            this.radius,
+            this.wedges[i].poison[ii]
+          ) * 2;
       }
       this.wedges[i].color = valueToRGBA(this.wedges[i].value);
+    }
+
+    //MOVE BASED ON VALUES
+    //what wedge has the highest value and is bigger than 0?
+    let wedge = Math.floor(Math.random() * 9);
+    let value = -1000;
+    for (let i = 0; i < this.wedges.length; i++) {
+        if (value < this.wedges[i].value) {
+          value = 
+          wedge = i;
+        }
+    }
+    if ((wedge == 0)) {
+      player.y -= 1;
+      player.x -= 1;
+    }
+    if ((wedge == 1)) {
+      player.y -= 1;
+    }
+    if ((wedge == 2)) {
+      player.x += 1;
+      player.y -= 1;
+    }
+    if ((wedge == 3)) {
+      player.x += 1;      
+    }
+    if ((wedge == 4)) {
+      player.x += 1;
+      player.y += 1;
+    }
+    if ((wedge == 5)) {
+      player.y += 1;
+    }
+    if ((wedge == 6)) {
+      player.x -= 1;
+      player.y += 1;
+    }
+    if ((wedge == 7)) {
+      player.x -= 1;
     }
   }
 
