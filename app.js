@@ -41,6 +41,23 @@ function createNewFood(index, array) {
   }
 }
 
+function valueToRGBA(value) {
+  // Ensure the value is within the range -1 to 1
+  value = Math.max(-1, Math.min(1, value));
+
+  // Map the value from [-1, 1] to [0, 1]
+  var normalizedValue = (value + 1) / 2;
+
+  // Calculate the red, green, and alpha components
+  var green = Math.round(255 * normalizedValue);
+  var red = Math.round(255 * (1 - normalizedValue));
+  var blue = 0;
+  var alpha =  Math.abs(value); // Alpha is 1 at -1 and 1, and 0 at 0
+
+  // Return the RGBA color string
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+}
+
 function createFoodPoison() {
   for (let i = 0; i < foodCount; i++) {
     let x = Math.random() * worldSize;

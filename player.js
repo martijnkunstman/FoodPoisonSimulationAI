@@ -25,8 +25,9 @@ class Player {
         startAngle: startAngle + addAngle,
         endAngle: endAngle + addAngle,
         color: color,
-        food: 0,
-        poinson: 0,
+        food: [],
+        poison: [],
+        value: 0,
       });
     }
 
@@ -61,20 +62,23 @@ class Player {
       startAngle + Math.PI / this.sensors,
       this.sensorsLenght / 2
     );
-    ctx.fillText(food, point.x, point.y);
+    ctx.fillText(food.length+"-"+poison.length, point.x, point.y);
   }
 
   calculateWedgeValues() {
     for (let i = 0; i < this.wedges.length; i++) {
-      this.wedges[i].food = 0;
-      this.wedges[i].poinson = 0;
+      this.wedges[i].food = [];
+      this.wedges[i].poison = [];
     }
 
     for (let i = 0; i < foodArray.length; i++) {
-      if (
-        calculateDistance(player.x, player.y, foodArray[i].x, foodArray[i].y) <
-        this.sensorsLenght
-      ) {
+      let distance = calculateDistance(
+        player.x,
+        player.y,
+        foodArray[i].x,
+        foodArray[i].y
+      );
+      if (distance < this.sensorsLenght) {
         //check the angle to this point
         let angle = calculateAngle(
           player.x,
@@ -85,25 +89,97 @@ class Player {
         //console.log(angle);
 
         for (let i = 0; i < this.wedges.length; i++) {
-          //this.wedges[i].food++;
           if (i == this.wedges.length - 1) {
             if (
               (angle > 0 && angle > this.wedges[i].startAngle) ||
               (angle < 0 && angle <= this.wedges[i].endAngle)
             ) {
-              this.wedges[i].food++;
+              this.wedges[i].food.push(distance);
             }
           } else {
             if (
               angle > this.wedges[i].startAngle &&
               angle <= this.wedges[i].endAngle
             ) {
-              this.wedges[i].food++;
+              this.wedges[i].food.push(distance);
             }
           }
         }
       }
     }
+
+    for (let i = 0; i < poisonArray.length; i++) {
+      let distance = calculateDistance(
+        player.x,
+        player.y,
+        poisonArray[i].x,
+        poisonArray[i].y
+      );
+      if (distance < this.sensorsLenght) {
+        //check the angle to this point
+        let angle = calculateAngle(
+          player.x,
+          player.y,
+          poisonArray[i].x,
+          poisonArray[i].y
+        );
+        //console.log(angle);
+
+        for (let i = 0; i < this.wedges.length; i++) {
+          if (i == this.wedges.length - 1) {
+            if (
+              (angle > 0 && angle > this.wedges[i].startAngle) ||
+              (angle < 0 && angle <= this.wedges[i].endAngle)
+            ) {
+              this.wedges[i].poison.push(distance);
+            }
+          } else {
+            if (
+              angle > this.wedges[i].startAngle &&
+              angle <= this.wedges[i].endAngle
+            ) {
+              this.wedges[i].poison.push(distance);
+            }
+          }
+        }
+      }
+    }
+
+    //calculate value and the color
+
+    for (let i = 0; i < this.wedges.length; i++) {
+      this.wedges[i].value = 0;
+      for (let ii = 0; ii < this.wedges[i].food.length; ii++) {
+        this.wedges[i].value += this.normalizePosition(
+          this.sensorsLenght,
+          this.radius,
+          this.wedges[i].food[ii]
+        );
+      }
+      for (let ii = 0; ii < this.wedges[i].poison.length; ii++) {
+        this.wedges[i].value -= this.normalizePosition(
+          this.sensorsLenght,
+          this.radius,
+          this.wedges[i].poison[ii]
+        )*2;
+      }
+      this.wedges[i].color = valueToRGBA(this.wedges[i].value);
+    }
+  }
+
+  normalizePosition(start, end, position) {
+    // Ensure start and end are not the same to avoid division by zero
+    if (start === end) {
+      throw new Error("Start and end values cannot be the same.");
+    }
+
+    // Calculate the normalized value
+    var normalized = (position - start) / (end - start);
+
+    // Clamp the value between 0 and 1
+    normalized = Math.max(0, Math.min(1, normalized));
+
+    return normalized;
   }
 
   update() {
