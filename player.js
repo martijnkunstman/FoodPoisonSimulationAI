@@ -173,7 +173,7 @@ class Player {
     let value = -1000;
     for (let i = 0; i < this.wedges.length; i++) {
         if (value < this.wedges[i].value) {
-          value = 
+          value = this.wedges[i].value;
           wedge = i;
         }
     }
