@@ -8,6 +8,8 @@ class Player {
     this.moveAngle = 0;
     this.speed = 0;
     this.maxSpeed = 2;
+    this.velocity = [0, 0];
+    this.damping = 0.1;
     this.points = 0;
     this.wedges = [];
     this.sensorsLenght = sensorsLenght;
@@ -171,6 +173,8 @@ class Player {
     //what wedge has the highest value and is bigger than 0?
     let wedge = Math.floor(Math.random() * 9);
     let value = -1000;
+    let x = 0;
+    let y = 0;
     for (let i = 0; i < this.wedges.length; i++) {
         if (value < this.wedges[i].value) {
           value = this.wedges[i].value;
@@ -178,34 +182,76 @@ class Player {
         }
     }
     if ((wedge == 0)) {
-      player.y -= 1;
-      player.x -= 1;
+      y = -1;
+      x = -1;
     }
     if ((wedge == 1)) {
-      player.y -= 1;
+      y = -1;
     }
     if ((wedge == 2)) {
-      player.x += 1;
-      player.y -= 1;
+      x = 1;
+      y = -1;
     }
     if ((wedge == 3)) {
-      player.x += 1;      
+      x = 1;      
     }
     if ((wedge == 4)) {
-      player.x += 1;
-      player.y += 1;
+      x = 1;
+      y = 1;
     }
     if ((wedge == 5)) {
-      player.y += 1;
+      y = 1;
     }
     if ((wedge == 6)) {
-      player.x -= 1;
-      player.y += 1;
+      x = -1;
+      y = 1;
     }
     if ((wedge == 7)) {
-      player.x -= 1;
+      x = -1;
+    }
+    
+    let updateVecor = [x,y];
+
+    this.updateVelocityUsingDamping(updateVecor);
+    this.normalizeVelocityToMaxSpeed();
+    this.x += this.velocity[0];
+    this.y += this.velocity[1];
+
+    if (this.x > canvas.width) {
+      this.x = 0;
+    }
+    if (this.x < 0) {
+      this.x = canvas.width;
+    }
+    if (this.y > canvas.height) {
+      this.y = 0;
+    }
+    if (this.y < 0) {
+      this.y = canvas.height;
+    }
+
+
+
+
+  }
+
+  updateVelocityUsingDamping(updateVecor) {
+    this.velocity[0] = this.velocity[0] + updateVecor[0]* this.damping ;
+    this.velocity[1] = this.velocity[1] + updateVecor[1]* this.damping ;
+  }
+
+
+  normalizeVelocityToMaxSpeed() {
+    let magnitude = Math.sqrt(
+      this.velocity[0] * this.velocity[0] + this.velocity[1] * this.velocity[1]
+    );
+    if (magnitude > this.maxSpeed) {
+      this.velocity[0] = (this.velocity[0] / magnitude) * this.maxSpeed;
+      this.velocity[1] = (this.velocity[1] / magnitude) * this.maxSpeed;
     }
   }
+
+
 
   normalizePosition(start, end, position) {
     // Ensure start and end are not the same to avoid division by zero
